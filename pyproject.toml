@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dew-library"
+version = "0.1.0"
+description = "Railway-ready DEW library API with hybrid search and grounded citations."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.110.0",
+  "uvicorn>=0.27.0",
+  "numpy>=1.26.0",
+  "faiss-cpu>=1.8.0",
+  "rank-bm25>=0.2.2",
+  "sentence-transformers>=5.2.3",
+]
+
+[tool.setuptools.packages.find]
+include = ["dewlib*", "server*"]

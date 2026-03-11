@@ -1,0 +1,206 @@
+{
+  "generated_at": "2026-03-11T01:05:27.752723+00:00",
+  "thresholds": {
+    "nonempty_ratio_lt": 0.6,
+    "avg_chars_per_page_lt": 200.0,
+    "no_ocr_output_avg_chars_lt": 50.0
+  },
+  "summary": {
+    "total_docs": 16,
+    "flagged_docs": 0
+  },
+  "docs": [
+    {
+      "doc_id": "839bc10165e24321",
+      "theorist": "Flusser",
+      "title": "Flusser",
+      "source_path": "Flusser/Flusser.pdf",
+      "ocr_path": "Flusser/Flusser.pdf",
+      "page_count": 321,
+      "nonempty_pages": 300,
+      "nonempty_ratio": 0.9345794392523364,
+      "avg_chars_per_page": 1713.423676012461,
+      "flags": []
+    },
+    {
+      "doc_id": "5bb7e56cefb9f7dd",
+      "theorist": "Virilio",
+      "title": "Virilio",
+      "source_path": "Virilio/Virilio.pdf",
+      "ocr_path": "Virilio/Virilio.pdf",
+      "page_count": 328,
+      "nonempty_pages": 310,
+      "nonempty_ratio": 0.9451219512195121,
+      "avg_chars_per_page": 2931.006097560976,
+      "flags": []
+    },
+    {
+      "doc_id": "2e5cb6c121b722c6",
+      "theorist": "Thacker",
+      "title": "Thacker",
+      "source_path": "Thacker/Thacker.pdf",
+      "ocr_path": "Thacker/Thacker.pdf",
+      "page_count": 673,
+      "nonempty_pages": 637,
+      "nonempty_ratio": 0.9465081723625557,
+      "avg_chars_per_page": 1921.5824665676078,
+      "flags": []
+    },
+    {
+      "doc_id": "c3243a67a8e0ba82",
+      "theorist": "Debord",
+      "title": "DeBord",
+      "source_path": "Debord/DeBord.pdf",
+      "ocr_path": "Debord/DeBord.pdf",
+      "page_count": 675,
+      "nonempty_pages": 643,
+      "nonempty_ratio": 0.9525925925925925,
+      "avg_chars_per_page": 1730.828148148148,
+      "flags": []
+    },
+    {
+      "doc_id": "1fe82beb53d9357b",
+      "theorist": "McLuhan",
+      "title": "McLuhan",
+      "source_path": "McLuhan/McLuhan.pdf",
+      "ocr_path": "McLuhan/McLuhan.pdf",
+      "page_count": 1437,
+      "nonempty_pages": 1370,
+      "nonempty_ratio": 0.953375086986778,
+      "avg_chars_per_page": 2376.267223382046,
+      "flags": []
+    },
+    {
+      "doc_id": "7a520213ce6e19b9",
+      "theorist": "Galloway",
+      "title": "Galloway",
+      "source_path": "Galloway/Galloway.pdf",
+      "ocr_path": "Galloway/Galloway.pdf",
+      "page_count": 1638,
+      "nonempty_pages": 1572,
+      "nonempty_ratio": 0.9597069597069597,
+      "avg_chars_per_page": 1952.454822954823,
+      "flags": []
+    },
+    {
+      "doc_id": "a9c2d091f9018828",
+      "theorist": "Wiener",
+      "title": "Weiner",
+      "source_path": "Wiener/Weiner.pdf",
+      "ocr_path": "Wiener/Weiner.pdf",
+      "page_count": 587,
+      "nonempty_pages": 564,
+      "nonempty_ratio": 0.9608177172061328,
+      "avg_chars_per_page": 1794.0238500851788,
+      "flags": []
+    },
+    {
+      "doc_id": "b0fa635ce0497e7d",
+      "theorist": "Baudrillard",
+      "title": "Baudrillard",
+      "source_path": "Baudrillard/Baudrillard.pdf",
+      "ocr_path": "Baudrillard/Baudrillard.pdf",
+      "page_count": 1083,
+      "nonempty_pages": 1043,
+      "nonempty_ratio": 0.9630655586334257,
+      "avg_chars_per_page": 2125.336103416436,
+      "flags": []
+    },
+    {
+      "doc_id": "ef065cbdd8e9d813",
+      "theorist": "Sontag",
+      "title": "Sontag",
+      "source_path": "Sontag/Sontag.pdf",
+      "ocr_path": "Sontag/Sontag.pdf",
+      "page_count": 746,
+      "nonempty_pages": 719,
+      "nonempty_ratio": 0.9638069705093834,
+      "avg_chars_per_page": 1840.5871313672922,
+      "flags": []
+    },
+    {
+      "doc_id": "7c1f86660aa4a5ca",
+      "theorist": "Girard",
+      "title": "Girard",
+      "source_path": "Girard/Girard.pdf",
+      "ocr_path": "Girard/Girard.pdf",
+      "page_count": 1464,
+      "nonempty_pages": 1434,
+      "nonempty_ratio": 0.9795081967213115,
+      "avg_chars_per_page": 2312.4590163934427,
+      "flags": []
+    },
+    {
+      "doc_id": "79c443d983872834",
+      "theorist": "Kittler",
+      "title": "Kittler",
+      "source_path": "Kittler/Kittler.pdf",
+      "ocr_path": "Kittler/Kittler.pdf",
+      "page_count": 1815,
+      "nonempty_pages": 1781,
+      "nonempty_ratio": 0.981267217630854,
+      "avg_chars_per_page": 3241.262258953168,
+      "flags": []
+    },
+    {
+      "doc_id": "b52e2c72ec3a1094",
+      "theorist": "Lacan",
+      "title": "Lacan",
+      "source_path": "Lacan/Lacan.pdf",
+      "ocr_path": "Lacan/Lacan.pdf",
+      "page_count": 1458,
+      "nonempty_pages": 1434,
+      "nonempty_ratio": 0.9835390946502057,
+      "avg_chars_per_page": 4543.88683127572,
+      "flags": []
+    },
+    {
+      "doc_id": "3bc0e02f02e783c2",
+      "theorist": "Illich",
+      "title": "Illich",
+      "source_path": "Illich/Illich.pdf",
+      "ocr_path": "Illich/Illich.pdf",
+      "page_count": 559,
+      "nonempty_pages": 550,
+      "nonempty_ratio": 0.9838998211091234,
+      "avg_chars_per_page": 2888.6010733452595,
+      "flags": []
+    },
+    {
+      "doc_id": "e193abc0ef358f1f",
+      "theorist": "Deleuze",
+      "title": "Deleuze",
+      "source_path": "Deleuze/Deleuze.pdf",
+      "ocr_path": "Deleuze/Deleuze.pdf",
+      "page_count": 1979,
+      "nonempty_pages": 1965,
+      "nonempty_ratio": 0.9929257200606367,
+      "avg_chars_per_page": 3086.912076806468,
+      "flags": []
+    },
+    {
+      "doc_id": "7c8f66653d35c9ad",
+      "theorist": "Castells",
+      "title": "Castells",
+      "source_path": "Castells/Castells.pdf",
+      "ocr_path": "Castells/Castells.pdf",
+      "page_count": 1957,
+      "nonempty_pages": 1949,
+      "nonempty_ratio": 0.99591211037302,
+      "avg_chars_per_page": 2764.7460398569237,
+      "flags": []
+    },
+    {
+      "doc_id": "fb53d29abc2dec6c",
+      "theorist": "Kittler",
+      "title": "OPTICAL MEDIA",
+      "source_path": "Kittler/OPTICAL MEDIA.pdf",
+      "ocr_path": "Kittler/OPTICAL MEDIA.pdf",
+      "page_count": 258,
+      "nonempty_pages": 258,
+      "nonempty_ratio": 1.0,
+      "avg_chars_per_page": 2667.217054263566,
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.log
+data/index/bm25_tokens.json
