@@ -88,11 +88,14 @@ def read_jsonl(path: Path) -> list[dict]:
         return []
     rows: list[dict] = []
     with path.open("r", encoding="utf-8") as handle:
-        for line in handle:
+        for line_number, line in enumerate(handle, 1):
             line = line.strip()
             if not line:
                 continue
-            rows.append(json.loads(line))
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError as exc:
+                raise ValueError(f"Invalid JSONL in {path} at line {line_number}: {exc.msg}") from exc
     return rows
 
 

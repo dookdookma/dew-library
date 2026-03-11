@@ -2,13 +2,12 @@ FROM python:3.12-slim
 
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1
-ENV DEW_DATA_DIR=/data
+ENV DEW_DATA_DIR=/app/data
 ENV HF_HOME=/models/huggingface
 
 COPY pyproject.toml README.md ./
 COPY dewlib ./dewlib
 COPY server ./server
-COPY scripts ./scripts
 COPY start.sh ./start.sh
 COPY data ./data
 

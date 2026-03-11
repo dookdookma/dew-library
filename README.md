@@ -43,10 +43,11 @@ Deploy from repo root.
 Recommended Railway settings:
 - Start command: use the Dockerfile
 - Healthcheck path: `/health/index`
-- Volume: optional, mount at `/data`
 
 Behavior:
-- the container seeds `/data` from bundled artifacts if the volume is empty
+- the app reads bundled artifacts directly from `/app/data`
 - the app preloads the search stack on startup
 - `bm25_tokens.json` is generated during Docker build, so Railway does not need to derive it on first boot
 - the sentence-transformers model `all-MiniLM-L6-v2` is downloaded during Docker build, not at request time
+
+Do not attach a Railway volume to this service. Treat each deploy as an immutable runtime image.
