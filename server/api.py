@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import threading
 from functools import lru_cache
 from pathlib import Path
 
@@ -14,6 +15,9 @@ from dewlib.util import read_json
 
 app = FastAPI(title="DEW Library API", version="1.0")
 _startup_error: str | None = None
+_search_warm_error: str | None = None
+_search_warm_thread: threading.Thread | None = None
+_search_lock = threading.Lock()
 
 
 class SearchRequest(BaseModel):
@@ -31,8 +35,32 @@ def _paths() -> Paths:
 
 @lru_cache(maxsize=1)
 def _search_service() -> SearchService:
-    cfg = _paths()
-    return SearchService(data_dir=cfg.data_dir)
+    with _search_lock:
+        cfg = _paths()
+        return SearchService(data_dir=cfg.data_dir)
+
+
+def _search_loaded() -> bool:
+    return bool(_search_service.cache_info().currsize)
+
+
+def _warm_search_service() -> None:
+    global _search_warm_error
+    try:
+        _search_service()
+        _search_warm_error = None
+    except Exception as exc:
+        _search_warm_error = f"{type(exc).__name__}: {exc}"
+
+
+def _start_search_warmup() -> None:
+    global _search_warm_thread
+    if _search_loaded():
+        return
+    if _search_warm_thread is not None and _search_warm_thread.is_alive():
+        return
+    _search_warm_thread = threading.Thread(target=_warm_search_service, daemon=True)
+    _search_warm_thread.start()
 
 
 @lru_cache(maxsize=1)
@@ -119,8 +147,8 @@ def _warm_runtime() -> None:
     try:
         _manifest_by_doc()
         _health_flags_by_doc()
-        _search_service()
         _startup_error = None
+        _start_search_warmup()
     except Exception as exc:
         _startup_error = f"{type(exc).__name__}: {exc}"
         raise
@@ -137,9 +165,16 @@ def health_index() -> dict:
         "exists_faiss": (cfg.index_dir / "faiss.index").exists(),
         "exists_embedder": (cfg.index_dir / "embedder.json").exists(),
         "exists_bm25_cache": (cfg.index_dir / "bm25_tokens.json").exists(),
+        "exists_meta_runtime_cache": (cfg.index_dir / "meta.pkl").exists(),
+        "exists_bm25_runtime_cache": (cfg.index_dir / "bm25.pkl").exists(),
         "ready": _startup_error is None,
         "startup_error": _startup_error,
+        "search_service_loaded": _search_loaded(),
+        "search_service_loading": _search_warm_thread is not None and _search_warm_thread.is_alive(),
+        "search_service_error": _search_warm_error,
     }
+    if checks["search_service_loaded"]:
+        checks.update(_search_service().semantic_status())
     if not checks["ready"]:
         raise HTTPException(status_code=503, detail=checks)
     return checks
@@ -149,15 +184,21 @@ def health_index() -> dict:
 def health_stats() -> dict:
     cfg = _paths()
     embedder_cfg = read_json(cfg.index_dir / "embedder.json") if (cfg.index_dir / "embedder.json").exists() else {}
+    service = _search_service() if _search_loaded() else None
     return {
         "manifest_size": cfg.manifest_path.stat().st_size if cfg.manifest_path.exists() else 0,
         "health_report_size": cfg.health_report_path.stat().st_size if cfg.health_report_path.exists() else 0,
         "meta_size": (cfg.index_dir / "meta.jsonl").stat().st_size if (cfg.index_dir / "meta.jsonl").exists() else 0,
+        "meta_runtime_cache_size": (cfg.index_dir / "meta.pkl").stat().st_size if (cfg.index_dir / "meta.pkl").exists() else 0,
         "faiss_size": (cfg.index_dir / "faiss.index").stat().st_size if (cfg.index_dir / "faiss.index").exists() else 0,
         "bm25_cache_size": (cfg.index_dir / "bm25_tokens.json").stat().st_size if (cfg.index_dir / "bm25_tokens.json").exists() else 0,
+        "bm25_runtime_cache_size": (cfg.index_dir / "bm25.pkl").stat().st_size if (cfg.index_dir / "bm25.pkl").exists() else 0,
         "pages_dir_exists": cfg.pages_dir.exists(),
         "embedder_backend": embedder_cfg.get("backend"),
         "embedder_model_name": embedder_cfg.get("model_name"),
         "doc_count": len(_manifest_by_doc()),
-        "chunk_count": len(_search_service().meta),
+        "chunk_count": len(service.meta) if service is not None else 0,
+        "search_service_loaded": service is not None,
+        "search_service_error": _search_warm_error,
+        "semantic_status": service.semantic_status() if service is not None else None,
     }

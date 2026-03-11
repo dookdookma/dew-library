@@ -1,10 +1,11 @@
 ﻿from __future__ import annotations
 
+import os
+import threading
 from difflib import SequenceMatcher
 from pathlib import Path
 
 import numpy as np
-from rank_bm25 import BM25Okapi
 
 from .embed import build_embedder, normalize_vectors
 from .index import load_index_artifacts
@@ -41,35 +42,28 @@ class SearchService:
         self.data_dir = data_dir
         loaded = load_index_artifacts(data_dir / "index")
         self.meta: list[dict] = loaded["meta"]
-        self.tokenized: list[list[str]] = loaded["tokenized"]
         self.faiss_index = loaded["faiss_index"]
         self.embedder_info: dict = loaded["embedder"]
-
-        self.bm25 = BM25Okapi(self.tokenized) if self.tokenized else None
-        self.embedder, _spec = build_embedder(
-            backend=self.embedder_info["backend"],
-            dim=int(self.embedder_info["dim"]),
-            model_name=self.embedder_info.get("model_name") or "all-MiniLM-L6-v2",
-            allow_download=False,
-            fallback_to_hash=False,
+        self.bm25 = loaded.get("bm25")
+        self.embedder = None
+        self._embedder_lock = threading.Lock()
+        self._embedder_loading = False
+        self._embedder_error: str | None = None
+        self._vector_query_enabled = (
+            os.getenv("DEWLIB_ENABLE_VECTOR_QUERY", "1").strip().lower() not in {"0", "false", "no"}
         )
+
+        if self.embedder_info["backend"] == "hash":
+            self.embedder, _spec = build_embedder(
+                backend=self.embedder_info["backend"],
+                dim=int(self.embedder_info["dim"]),
+                model_name=self.embedder_info.get("model_name") or "all-MiniLM-L6-v2",
+                allow_download=False,
+                fallback_to_hash=False,
+            )
+        elif self._vector_query_enabled:
+            self._start_embedder_load()
         self._chunk_map = {row["chunk_id"]: row for row in self.meta}
-
-        self.text_token_sets = [set(tokens) for tokens in self.tokenized]
-        self.title_token_sets = [set(tokenize(row.get("title", ""))) for row in self.meta]
-        self.theorist_token_sets = [set(tokenize(row.get("theorist", ""))) for row in self.meta]
-        self.metadata_token_sets = [
-            self.title_token_sets[idx].union(self.theorist_token_sets[idx])
-            for idx in range(len(self.meta))
-        ]
-        self.text_match_texts = [normalize_match_text(row.get("text", "")) for row in self.meta]
-        self.title_match_texts = [normalize_match_text(row.get("title", "")) for row in self.meta]
-        self.theorist_match_texts = [normalize_match_text(row.get("theorist", "")) for row in self.meta]
-        self.metadata_match_texts = [
-            normalize_match_text(f"{row.get('theorist', '')} {row.get('title', '')}")
-            for row in self.meta
-        ]
-
         self.doc_first_chunk_page: dict[str, int] = {}
         self.theorist_to_indices: dict[str, list[int]] = {}
         for idx, row in enumerate(self.meta):
@@ -79,6 +73,50 @@ class SearchService:
                 self.doc_first_chunk_page.get(doc_id, row["page_start"]),
             )
             self.theorist_to_indices.setdefault(row["theorist"], []).append(idx)
+        self._row_feature_cache: list[dict | None] = [None] * len(self.meta)
+
+    def _build_embedder(self):
+        embedder, _spec = build_embedder(
+            backend=self.embedder_info["backend"],
+            dim=int(self.embedder_info["dim"]),
+            model_name=self.embedder_info.get("model_name") or "all-MiniLM-L6-v2",
+            allow_download=False,
+            fallback_to_hash=False,
+        )
+        return embedder
+
+    def _load_embedder_background(self) -> None:
+        try:
+            embedder = self._build_embedder()
+        except Exception as exc:
+            with self._embedder_lock:
+                self._embedder_error = f"{type(exc).__name__}: {exc}"
+                self._embedder_loading = False
+            return
+        with self._embedder_lock:
+            self.embedder = embedder
+            self._embedder_error = None
+            self._embedder_loading = False
+
+    def _start_embedder_load(self) -> None:
+        if not self._vector_query_enabled or self.embedder_info["backend"] != "sentence_transformers":
+            return
+        with self._embedder_lock:
+            if self.embedder is not None or self._embedder_loading:
+                return
+            self._embedder_loading = True
+        thread = threading.Thread(target=self._load_embedder_background, daemon=True)
+        thread.start()
+
+    def semantic_status(self) -> dict[str, str | bool | None]:
+        with self._embedder_lock:
+            return {
+                "vector_query_enabled": self._vector_query_enabled,
+                "semantic_backend": self.embedder_info["backend"],
+                "semantic_ready": self.embedder is not None,
+                "semantic_loading": self._embedder_loading,
+                "semantic_error": self._embedder_error,
+            }
 
     def get_chunk(self, chunk_id: str) -> dict | None:
         return self._chunk_map.get(chunk_id)
@@ -99,6 +137,27 @@ class SearchService:
         if theorist is None:
             return list(range(len(self.meta)))
         return list(self.theorist_to_indices.get(theorist, []))
+
+    def _row_features(self, idx: int) -> dict:
+        cached = self._row_feature_cache[idx]
+        if cached is not None:
+            return cached
+
+        row = self.meta[idx]
+        title_token_set = set(tokenize(row.get("title", "")))
+        theorist_token_set = set(tokenize(row.get("theorist", "")))
+        cached = {
+            "text_token_set": set(tokenize(row.get("text", ""))),
+            "title_token_set": title_token_set,
+            "theorist_token_set": theorist_token_set,
+            "metadata_token_set": title_token_set.union(theorist_token_set),
+            "text_match_text": normalize_match_text(row.get("text", "")),
+            "title_match_text": normalize_match_text(row.get("title", "")),
+            "theorist_match_text": normalize_match_text(row.get("theorist", "")),
+            "metadata_match_text": normalize_match_text(f"{row.get('theorist', '')} {row.get('title', '')}"),
+        }
+        self._row_feature_cache[idx] = cached
+        return cached
 
     def _vector_candidate_pairs(
         self,
@@ -160,14 +219,18 @@ class SearchService:
             key=lambda idx: (-bm25_scores[idx], self.meta[idx]["chunk_id"]),
         )[:bm25_k]
 
-        query_vector = self.embedder.encode([query])
-        query_vector = normalize_vectors(np.asarray(query_vector, dtype=np.float32))
-        vector_pairs = self._vector_candidate_pairs(
-            query_vector=query_vector,
-            candidate_set=candidate_set,
-            total=total,
-            vector_k=vector_k,
-        )
+        vector_pairs: list[tuple[int, float]] = []
+        if self.embedder is not None:
+            query_vector = self.embedder.encode([query])
+            query_vector = normalize_vectors(np.asarray(query_vector, dtype=np.float32))
+            vector_pairs = self._vector_candidate_pairs(
+                query_vector=query_vector,
+                candidate_set=candidate_set,
+                total=total,
+                vector_k=vector_k,
+            )
+        elif self.embedder_info["backend"] == "sentence_transformers":
+            self._start_embedder_load()
 
         candidate_pool = set(bm25_order)
         candidate_pool.update(idx for idx, _score in vector_pairs)
@@ -186,23 +249,24 @@ class SearchService:
         scored: list[tuple[int, float, float, float]] = []
         for idx in candidate_pool:
             row = self.meta[idx]
+            features = self._row_features(idx)
+            text_token_set = features["text_token_set"]
+            title_token_set = features["title_token_set"]
+            theorist_token_set = features["theorist_token_set"]
+            metadata_token_set = features["metadata_token_set"]
             text_len = int(row.get("text_len", len(row.get("text", ""))))
-            author_mentioned = bool(self.theorist_token_sets[idx].intersection(self.text_token_sets[idx]))
-            text_cov = _coverage(query_token_set, self.text_token_sets[idx])
-            title_cov = _coverage(query_token_set, self.title_token_sets[idx])
-            theorist_cov = _coverage(query_token_set, self.theorist_token_sets[idx])
-            metadata_cov = _coverage(query_token_set, self.metadata_token_sets[idx])
-            fuzzy_text_cov = _fuzzy_coverage(query_token_set, self.text_token_sets[idx])
-            fuzzy_metadata_cov = _fuzzy_coverage(query_token_set, self.metadata_token_sets[idx])
+            author_mentioned = bool(theorist_token_set.intersection(text_token_set))
+            text_cov = _coverage(query_token_set, text_token_set)
+            title_cov = _coverage(query_token_set, title_token_set)
+            theorist_cov = _coverage(query_token_set, theorist_token_set)
+            metadata_cov = _coverage(query_token_set, metadata_token_set)
+            fuzzy_text_cov = _fuzzy_coverage(query_token_set, text_token_set)
+            fuzzy_metadata_cov = _fuzzy_coverage(query_token_set, metadata_token_set)
 
-            exact_phrase_text = bool(query_match_text and query_match_text in self.text_match_texts[idx])
-            exact_phrase_title = bool(query_match_text and query_match_text in self.title_match_texts[idx])
-            exact_phrase_theorist = bool(
-                query_match_text and query_match_text in self.theorist_match_texts[idx]
-            )
-            exact_phrase_metadata = bool(
-                query_match_text and query_match_text in self.metadata_match_texts[idx]
-            )
+            exact_phrase_text = bool(query_match_text and query_match_text in features["text_match_text"])
+            exact_phrase_title = bool(query_match_text and query_match_text in features["title_match_text"])
+            exact_phrase_theorist = bool(query_match_text and query_match_text in features["theorist_match_text"])
+            exact_phrase_metadata = bool(query_match_text and query_match_text in features["metadata_match_text"])
 
             bm25_norm = (float(bm25_scores[idx]) / max_bm25) if max_bm25 > 0 else 0.0
             if idx in vector_score_map:
@@ -285,6 +349,7 @@ class SearchService:
                     "page_end": row["page_end"],
                     "excerpt": row.get("text", "")[:600],
                     "embedder_backend": self.embedder_info["backend"],
+                    "semantic_ready": self.embedder is not None,
                 }
             )
 

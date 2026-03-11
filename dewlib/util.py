@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import pickle
 import re
 import unicodedata
 import uuid
@@ -78,9 +79,24 @@ def atomic_write_jsonl(path: Path, rows: Iterable[dict]) -> None:
     atomic_write_text(path, "\n".join(lines) + ("\n" if lines else ""))
 
 
+def atomic_write_pickle(path: Path, payload) -> None:
+    ensure_dir(path.parent)
+    tmp = path.parent / f".{path.name}.{uuid.uuid4().hex}.tmp"
+    with tmp.open("wb") as handle:
+        pickle.dump(payload, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(tmp, path)
+
+
 def read_json(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def read_pickle(path: Path):
+    with path.open("rb") as handle:
+        return pickle.load(handle)
 
 
 def read_jsonl(path: Path) -> list[dict]:

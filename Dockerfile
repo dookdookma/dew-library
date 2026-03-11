@@ -11,7 +11,7 @@ COPY server ./server
 COPY start.sh ./start.sh
 COPY data ./data
 
-RUN chmod +x /app/start.sh &&     pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir . &&     python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" &&     python -c "from pathlib import Path; from dewlib.util import atomic_write_json, read_jsonl, tokenize; meta = read_jsonl(Path('/app/data/index/meta.jsonl')); atomic_write_json(Path('/app/data/index/bm25_tokens.json'), {'tokenized': [tokenize(row.get('text', '')) for row in meta]})"
+RUN chmod +x /app/start.sh &&     pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir . &&     python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" &&     python -c "from pathlib import Path; from dewlib.index import build_runtime_caches; from dewlib.util import atomic_write_json, read_jsonl, tokenize; meta = read_jsonl(Path('/app/data/index/meta.jsonl')); atomic_write_json(Path('/app/data/index/bm25_tokens.json'), {'tokenized': [tokenize(row.get('text', '')) for row in meta]}); build_runtime_caches(Path('/app/data/index'))"
 
 EXPOSE 8080
 CMD ["./start.sh"]
