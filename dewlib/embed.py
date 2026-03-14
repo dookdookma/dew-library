@@ -74,7 +74,16 @@ class SentenceTransformersEmbedder:
         import torch
 
         self.model_name = model_name
-        self.model = SentenceTransformer(model_name, local_files_only=not allow_download)
+        cache_folder = (
+            os.getenv("SENTENCE_TRANSFORMERS_HOME")
+            or os.getenv("HF_HOME")
+            or None
+        )
+        self.model = SentenceTransformer(
+            model_name,
+            cache_folder=cache_folder,
+            local_files_only=not allow_download,
+        )
         self.dim = int(self.model.get_sentence_embedding_dimension())
         self.device = str(self.model.device)
         self.batch_size = _default_st_batch_size(self.device)
