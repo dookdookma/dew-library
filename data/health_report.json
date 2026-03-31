@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-03-11T01:05:27.752723+00:00",
+  "generated_at": "2026-03-31T05:24:11.500632+00:00",
   "thresholds": {
     "nonempty_ratio_lt": 0.6,
     "avg_chars_per_page_lt": 200.0,
     "no_ocr_output_avg_chars_lt": 50.0
   },
   "summary": {
-    "total_docs": 16,
+    "total_docs": 17,
     "flagged_docs": 0
   },
   "docs": [
@@ -19,31 +19,7 @@
       "page_count": 321,
       "nonempty_pages": 300,
       "nonempty_ratio": 0.9345794392523364,
-      "avg_chars_per_page": 1713.423676012461,
-      "flags": []
-    },
-    {
-      "doc_id": "5bb7e56cefb9f7dd",
-      "theorist": "Virilio",
-      "title": "Virilio",
-      "source_path": "Virilio/Virilio.pdf",
-      "ocr_path": "Virilio/Virilio.pdf",
-      "page_count": 328,
-      "nonempty_pages": 310,
-      "nonempty_ratio": 0.9451219512195121,
-      "avg_chars_per_page": 2931.006097560976,
-      "flags": []
-    },
-    {
-      "doc_id": "2e5cb6c121b722c6",
-      "theorist": "Thacker",
-      "title": "Thacker",
-      "source_path": "Thacker/Thacker.pdf",
-      "ocr_path": "Thacker/Thacker.pdf",
-      "page_count": 673,
-      "nonempty_pages": 637,
-      "nonempty_ratio": 0.9465081723625557,
-      "avg_chars_per_page": 1921.5824665676078,
+      "avg_chars_per_page": 1701.5233644859813,
       "flags": []
     },
     {
@@ -53,9 +29,45 @@
       "source_path": "Debord/DeBord.pdf",
       "ocr_path": "Debord/DeBord.pdf",
       "page_count": 675,
-      "nonempty_pages": 643,
-      "nonempty_ratio": 0.9525925925925925,
-      "avg_chars_per_page": 1730.828148148148,
+      "nonempty_pages": 633,
+      "nonempty_ratio": 0.9377777777777778,
+      "avg_chars_per_page": 1706.9911111111112,
+      "flags": []
+    },
+    {
+      "doc_id": "2e5cb6c121b722c6",
+      "theorist": "Thacker",
+      "title": "Thacker",
+      "source_path": "Thacker/Thacker.pdf",
+      "ocr_path": "Thacker/Thacker.pdf",
+      "page_count": 673,
+      "nonempty_pages": 636,
+      "nonempty_ratio": 0.9450222882615156,
+      "avg_chars_per_page": 1888.7206537890045,
+      "flags": []
+    },
+    {
+      "doc_id": "5bb7e56cefb9f7dd",
+      "theorist": "Virilio",
+      "title": "Virilio",
+      "source_path": "Virilio/Virilio.pdf",
+      "ocr_path": "Virilio/Virilio.pdf",
+      "page_count": 328,
+      "nonempty_pages": 311,
+      "nonempty_ratio": 0.948170731707317,
+      "avg_chars_per_page": 2941.25,
+      "flags": []
+    },
+    {
+      "doc_id": "dca73cb6ec4bcfa0",
+      "theorist": "Bataille",
+      "title": "Bataille",
+      "source_path": "Bataille/Bataille.pdf",
+      "ocr_path": "Bataille/Bataille.pdf",
+      "page_count": 1677,
+      "nonempty_pages": 1598,
+      "nonempty_ratio": 0.9528920691711389,
+      "avg_chars_per_page": 2199.6976744186045,
       "flags": []
     },
     {
@@ -67,7 +79,7 @@
       "page_count": 1437,
       "nonempty_pages": 1370,
       "nonempty_ratio": 0.953375086986778,
-      "avg_chars_per_page": 2376.267223382046,
+      "avg_chars_per_page": 2395.8879610299236,
       "flags": []
     },
     {
@@ -77,9 +89,9 @@
       "source_path": "Galloway/Galloway.pdf",
       "ocr_path": "Galloway/Galloway.pdf",
       "page_count": 1638,
-      "nonempty_pages": 1572,
-      "nonempty_ratio": 0.9597069597069597,
-      "avg_chars_per_page": 1952.454822954823,
+      "nonempty_pages": 1568,
+      "nonempty_ratio": 0.9572649572649573,
+      "avg_chars_per_page": 1742.6953601953603,
       "flags": []
     },
     {
@@ -89,9 +101,9 @@
       "source_path": "Wiener/Weiner.pdf",
       "ocr_path": "Wiener/Weiner.pdf",
       "page_count": 587,
-      "nonempty_pages": 564,
-      "nonempty_ratio": 0.9608177172061328,
-      "avg_chars_per_page": 1794.0238500851788,
+      "nonempty_pages": 565,
+      "nonempty_ratio": 0.9625212947189097,
+      "avg_chars_per_page": 1796.8586030664396,
       "flags": []
     },
     {
@@ -103,7 +115,7 @@
       "page_count": 1083,
       "nonempty_pages": 1043,
       "nonempty_ratio": 0.9630655586334257,
-      "avg_chars_per_page": 2125.336103416436,
+      "avg_chars_per_page": 2129.7950138504157,
       "flags": []
     },
     {
@@ -115,7 +127,7 @@
       "page_count": 746,
       "nonempty_pages": 719,
       "nonempty_ratio": 0.9638069705093834,
-      "avg_chars_per_page": 1840.5871313672922,
+      "avg_chars_per_page": 1845.2587131367293,
       "flags": []
     },
     {
@@ -127,7 +139,7 @@
       "page_count": 1464,
       "nonempty_pages": 1434,
       "nonempty_ratio": 0.9795081967213115,
-      "avg_chars_per_page": 2312.4590163934427,
+      "avg_chars_per_page": 2312.937841530055,
       "flags": []
     },
     {
@@ -137,9 +149,9 @@
       "source_path": "Kittler/Kittler.pdf",
       "ocr_path": "Kittler/Kittler.pdf",
       "page_count": 1815,
-      "nonempty_pages": 1781,
-      "nonempty_ratio": 0.981267217630854,
-      "avg_chars_per_page": 3241.262258953168,
+      "nonempty_pages": 1780,
+      "nonempty_ratio": 0.9807162534435262,
+      "avg_chars_per_page": 3282.413223140496,
       "flags": []
     },
     {
@@ -151,7 +163,7 @@
       "page_count": 1458,
       "nonempty_pages": 1434,
       "nonempty_ratio": 0.9835390946502057,
-      "avg_chars_per_page": 4543.88683127572,
+      "avg_chars_per_page": 4545.394375857339,
       "flags": []
     },
     {
@@ -163,7 +175,7 @@
       "page_count": 559,
       "nonempty_pages": 550,
       "nonempty_ratio": 0.9838998211091234,
-      "avg_chars_per_page": 2888.6010733452595,
+      "avg_chars_per_page": 2894.479427549195,
       "flags": []
     },
     {
@@ -175,7 +187,7 @@
       "page_count": 1979,
       "nonempty_pages": 1965,
       "nonempty_ratio": 0.9929257200606367,
-      "avg_chars_per_page": 3086.912076806468,
+      "avg_chars_per_page": 3095.6159676604348,
       "flags": []
     },
     {
@@ -187,7 +199,7 @@
       "page_count": 1957,
       "nonempty_pages": 1949,
       "nonempty_ratio": 0.99591211037302,
-      "avg_chars_per_page": 2764.7460398569237,
+      "avg_chars_per_page": 2774.2713336739907,
       "flags": []
     },
     {
@@ -199,7 +211,7 @@
       "page_count": 258,
       "nonempty_pages": 258,
       "nonempty_ratio": 1.0,
-      "avg_chars_per_page": 2667.217054263566,
+      "avg_chars_per_page": 2675.0503875968993,
       "flags": []
     }
   ]
