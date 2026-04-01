@@ -1,5 +1,5 @@
 {
-  "backend": "hash",
+  "backend": "sentence_transformers",
   "dim": 384,
-  "model_name": null
+  "model_name": "all-MiniLM-L6-v2"
 }
